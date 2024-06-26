@@ -431,7 +431,7 @@ const Chatbox = () => {
               </div>
               <Box
                 sx={{
-                  backgroundColor: message.fromBot ? "#dbd7d77d" : "#058719cf",
+                  backgroundColor: message.fromBot ? "#dbd7d77d" : "#30b945b8",
                   padding: "5px 15px",
                   borderRadius: message.fromBot
                     ? "20px 20px 20px 0px"
@@ -624,7 +624,7 @@ const Chatbox = () => {
                   onClick={() => handleImageUpload(selectedFile)}
                   disabled={isBotLoading}
                 >
-                  Check
+                  Validate
                 </Button>
                 <Box
                   sx={{
