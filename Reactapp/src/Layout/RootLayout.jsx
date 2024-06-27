@@ -38,7 +38,7 @@ const RootLayout = () => {
           sx={{
             position: "fixed",
             bottom: "12%",
-            right: "5%",
+            right: "3%",
             width: "100px",
             height: "130px",
             overflow: "hidden",

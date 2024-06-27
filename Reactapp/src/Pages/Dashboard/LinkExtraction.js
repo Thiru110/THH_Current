@@ -12,6 +12,9 @@ import {
   Box,
   IconButton,
   Tooltip,
+  tableCellClasses,
+  TableFooter,
+  TablePagination,
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -22,18 +25,103 @@ import { NavLink, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import axiosInstance from "../../axios/axiosConfig";
 import { FaDownload } from "react-icons/fa6";
+// ! pagination
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import LastPageIcon from "@mui/icons-material/LastPage";
+import { useTheme } from "@emotion/react";
+import FirstPageIcon from "@mui/icons-material/FirstPage";
+import PropTypes from "prop-types";
+// ! ***
 // Styled component for TableCell
-const StyledTableCell = styled(TableCell)({
-  // fontSize:"20px",
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
   border: "2px solid black",
-});
+  [`&.${tableCellClasses.head}`]: {
+    // backgroundColor: theme.palette.common.black,
+    backgroundColor: "#3778a6",
+    color: "white",
+    fontSize: 17,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
 const StyledNavLink = styled(NavLink)({
   textDecoration: "none",
-  // color: "#fff",
-  fontSize: 20,
+  color: "#1283d3",
+  fontSize: 16,
   paddingRight: 10,
 });
+// ! pagination
 
+function TablePaginationActions(props) {
+  const theme = useTheme();
+  const { count, page, rowsPerPage, onPageChange } = props;
+
+  const handleFirstPageButtonClick = (event) => {
+    onPageChange(event, 0);
+  };
+
+  const handleBackButtonClick = (event) => {
+    onPageChange(event, page - 1);
+  };
+
+  const handleNextButtonClick = (event) => {
+    onPageChange(event, page + 1);
+  };
+
+  const handleLastPageButtonClick = (event) => {
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+  };
+
+  return (
+    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label="first page"
+      >
+        {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
+      </IconButton>
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label="previous page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowRight />
+        ) : (
+          <KeyboardArrowLeft />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="next page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowLeft />
+        ) : (
+          <KeyboardArrowRight />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleLastPageButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="last page"
+      >
+        {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
+      </IconButton>
+    </Box>
+  );
+}
+TablePaginationActions.propTypes = {
+  count: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
+  page: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+};
+// ! ******************end
 const LinkExtraction = () => {
   const user = useSelector((state) => state.auth.user);
   const [selectedEmail, setSelectedEmail] = useState(
@@ -49,6 +137,11 @@ const LinkExtraction = () => {
 
   const location = useLocation();
   const { data: jsonData } = location.state || {};
+
+  // ! pagination
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(6);
+  // ! ***********end
 
   useEffect(() => {
     if (jsonData) {
@@ -146,6 +239,17 @@ const LinkExtraction = () => {
       // Optionally display an error message or handle error state
     }
   };
+  // ! pagination
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+  // ! ************end
 
   return (
     <>
@@ -156,7 +260,7 @@ const LinkExtraction = () => {
             justifyContent: "space-evenly",
             alignItems: "center",
             flexWrap: "wrap",
-            padding: "15px",
+            padding: "15px 70px",
             gap: 2,
           }}
         >
@@ -268,8 +372,16 @@ const LinkExtraction = () => {
           </TableHead>
 
           <TableBody>
+            {/* {Array.isArray(searchResults) && searchResults.length > 0 ? (
+              searchResults */}
             {Array.isArray(searchResults) && searchResults.length > 0 ? (
-              searchResults.map((row, index) => (
+              (rowsPerPage > 0
+                ? searchResults.slice(
+                    page * rowsPerPage,
+                    page * rowsPerPage + rowsPerPage
+                  )
+                : searchResults
+              ).map((row, index) => (
                 <TableRow key={index}>
                   <StyledTableCell align="left" component="th" scope="row">
                     {row.name}
@@ -295,6 +407,26 @@ const LinkExtraction = () => {
               </TableRow>
             )}
           </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TablePagination
+                rowsPerPageOptions={[6, 15, 25]}
+                colSpan={6}
+                count={searchResults.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                SelectProps={{
+                  inputProps: {
+                    "aria-label": "rows per page",
+                  },
+                  native: true,
+                }}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                ActionsComponent={TablePaginationActions}
+              />
+            </TableRow>
+          </TableFooter>
         </Table>
       </TableContainer>
     </>

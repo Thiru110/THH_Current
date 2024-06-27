@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import {
   Button,
   MenuItem,
-  // Paper,
   Table,
   TableBody,
   TableCell,
@@ -14,6 +13,9 @@ import {
   ButtonBase,
   Tooltip,
   IconButton,
+  tableCellClasses,
+  TableFooter,
+  TablePagination,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -21,28 +23,36 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useSelector } from "react-redux";
 import mailIcon from "../../Utils/mailIcon.png";
 import downloadIcon from "../../Utils/downloadIcon.png";
-// import releventBtn from "../../Utils/RelevantRank.gif";
 import releventBtn from "../../Utils/RRButton.png";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import ClearIcon from "@mui/icons-material/Clear";
 import axiosInstance from "../../axios/axiosConfig";
+import FirstPageIcon from "@mui/icons-material/FirstPage";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import LastPageIcon from "@mui/icons-material/LastPage";
+import { useTheme } from "@emotion/react";
+import PropTypes from "prop-types";
 
-const StyledTableCell = styled(TableCell)({
+// const StyledTableCell = styled(TableCell)({
+//   border: "2px solid black",
+// });
+
+const StyledTableCell = styled(TableCell)(() => ({
   border: "2px solid black",
-});
-
-// const StyledTableCell = styled(TableCell)(({ theme }) => ({
-//   [`&.${tableCellClasses.head}`]: {
-//     backgroundColor: theme.palette.common.white,
-//     color: theme.palette.common.black,
-//   },
-//   [`&.${tableCellClasses.body}`]: {
-//     fontSize: 14,
-//   },
-// }));
-const ImageButton = styled(ButtonBase)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    // backgroundColor: theme.palette.common.black,
+    backgroundColor: "#3778a6",
+    color: "white",
+    fontSize: 17,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+const ImageButton = styled(ButtonBase)(() => ({
   "& img": {
     width: "auto",
     height: "auto",
@@ -55,6 +65,74 @@ const ImageButton = styled(ButtonBase)(({ theme }) => ({
     zIndex: 1,
   },
 }));
+function TablePaginationActions(props) {
+  const theme = useTheme();
+  const { count, page, rowsPerPage, onPageChange } = props;
+
+  const handleFirstPageButtonClick = (event) => {
+    onPageChange(event, 0);
+  };
+
+  const handleBackButtonClick = (event) => {
+    onPageChange(event, page - 1);
+  };
+
+  const handleNextButtonClick = (event) => {
+    onPageChange(event, page + 1);
+  };
+
+  const handleLastPageButtonClick = (event) => {
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+  };
+
+  return (
+    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label="first page"
+      >
+        {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
+      </IconButton>
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label="previous page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowRight />
+        ) : (
+          <KeyboardArrowLeft />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="next page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowLeft />
+        ) : (
+          <KeyboardArrowRight />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleLastPageButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="last page"
+      >
+        {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
+      </IconButton>
+    </Box>
+  );
+}
+TablePaginationActions.propTypes = {
+  count: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
+  page: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+};
+
 // !   component start
 const FetchResume = () => {
   const user = useSelector((state) => state.auth.user);
@@ -74,6 +152,8 @@ const FetchResume = () => {
   const [startDate, setStartDate] = React.useState(null);
   const [endDate, setEndDate] = React.useState(null);
   const [percentageMap, setPercentageMap] = useState({}); // State to store percentage for each row
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(6);
 
   useEffect(() => {
     if (jsonData) {
@@ -122,11 +202,11 @@ const FetchResume = () => {
       });
       console.log(response);
 
-      const result = response.data;
+      const result = response?.data;
 
       if (result.status === "Success") {
-        setSearchResults(result.data);
-        console.log(result.data);
+        setSearchResults(result?.data);
+        console.log(result?.data);
         toast.success("Data fetched based on your filters");
       } else {
         console.error("Search API call failed:", result.status);
@@ -210,6 +290,15 @@ const FetchResume = () => {
     }
   };
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   return (
     <>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -219,7 +308,7 @@ const FetchResume = () => {
             justifyContent: "space-evenly",
             alignItems: "center",
             flexWrap: "wrap",
-            padding: "15px",
+            padding: "15px 70px",
             gap: 2,
           }}
         >
@@ -308,6 +397,7 @@ const FetchResume = () => {
           </Button>
         </Box>
       </LocalizationProvider>
+
       <TableContainer
         // component={Paper}
         sx={{ overflowX: "auto", padding: "15px 150px" }}
@@ -328,8 +418,16 @@ const FetchResume = () => {
           </TableHead>
 
           <TableBody>
+            {/* {Array.isArray(searchResults) && searchResults.length > 0 ? (
+              searchResults.map((row, index) => ( */}
             {Array.isArray(searchResults) && searchResults.length > 0 ? (
-              searchResults.map((row, index) => (
+              (rowsPerPage > 0
+                ? searchResults.slice(
+                    page * rowsPerPage,
+                    page * rowsPerPage + rowsPerPage
+                  )
+                : searchResults
+              ).map((row, index) => (
                 <TableRow key={index}>
                   <StyledTableCell component="th" scope="row">
                     {row.Name}
@@ -426,6 +524,118 @@ const FetchResume = () => {
               </TableRow>
             )}
           </TableBody>
+          {/* <TableBody>
+  {Array.isArray(searchResults) && searchResults.length > 0 ? (
+    (rowsPerPage > 0
+      ? searchResults.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      : searchResults
+    ).map((row, index) => (
+      <TableRow key={index}>
+        <StyledTableCell component="th" scope="row">
+          {row.Name}
+        </StyledTableCell>
+        <StyledTableCell align="left">{row.Email}</StyledTableCell>
+        <StyledTableCell align="left">{row.Similarity}</StyledTableCell>
+        <StyledTableCell align="center">
+          <Tooltip title="Download">
+            <ImageButton
+              onClick={async () => {
+                await handleDownloadClick(row.Email);
+              }}
+            >
+              <img
+                src={downloadIcon}
+                alt="Download Icon"
+                style={{
+                  width: "auto",
+                  height: "auto",
+                  maxWidth: "25px",
+                  maxHeight: "25px",
+                }}
+              />
+            </ImageButton>
+          </Tooltip>
+        </StyledTableCell>
+        <StyledTableCell align="center">
+          <Tooltip title="Mail">
+            <ImageButton
+              onClick={() => handleMailClick(row.Email, row.Name)}
+            >
+              <img
+                src={mailIcon}
+                alt="Mail Icon"
+                style={{
+                  width: "auto",
+                  height: "auto",
+                  maxWidth: "25px",
+                  maxHeight: "25px",
+                }}
+              />
+            </ImageButton>
+          </Tooltip>
+        </StyledTableCell>
+        <StyledTableCell align="center">
+          <Tooltip
+            title={
+              selectedJobId !== ""
+                ? ""
+                : "Please fill a Job ID to enable Relevant Ranking"
+            }
+          >
+            <ImageButton
+              onClick={() =>
+                handleRelevantExperienceClick(row.Name, selectedJobId, row.Email)
+              }
+            >
+              <img
+                src={releventBtn}
+                alt="Relevant Experience Icon"
+                style={{
+                  width: "auto",
+                  height: "auto",
+                  maxWidth: "30px",
+                  maxHeight: "25px",
+                }}
+              />
+            </ImageButton>
+          </Tooltip>
+          {percentageMap[row.Email] !== undefined && (
+            <div style={{ marginTop: "5px" }}>
+              {`Relevant Experience: ${percentageMap[row.Email]}`}
+            </div>
+          )}
+        </StyledTableCell>
+      </TableRow>
+    ))
+  ) : (
+    <TableRow>
+      <StyledTableCell colSpan={6} align="center">
+        No data available
+      </StyledTableCell>
+    </TableRow>
+  )}
+</TableBody> */}
+
+          <TableFooter>
+            <TableRow>
+              <TablePagination
+                rowsPerPageOptions={[6, 15, 25]}
+                colSpan={6}
+                count={searchResults.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                SelectProps={{
+                  inputProps: {
+                    "aria-label": "rows per page",
+                  },
+                  native: true,
+                }}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                ActionsComponent={TablePaginationActions}
+              />
+            </TableRow>
+          </TableFooter>
         </Table>
       </TableContainer>
     </>

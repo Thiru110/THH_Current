@@ -32,7 +32,7 @@ const AnimatedSpan = styled.span`
   position: relative;
   bottom: 70px;
   font-size: ${(props) =>
-    props.index !== 0 ? "32px" : "42px"}; /* Set font size for non-index 0 */
+    props.index !== 0 ? "35px" : "50px"}; /* Set font size for non-index 0 */
   top: ${(props) => props.top}px; /* Adjust this value to align the spans */
   color: ${(props) => props.color || "#68eb44"}; /* Default color */
 `;

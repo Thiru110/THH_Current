@@ -92,9 +92,9 @@ const Chatbox = () => {
       setInput("");
       // generateResponse(messages)
       setBotLoading(true);
-      axios
+      axiosInstance
         .post(
-          "http://localhost:4000/response",
+          "/response",
           { message: userMessage },
           {
             headers: {
@@ -463,7 +463,10 @@ const Chatbox = () => {
                   borderRadius: "20px 20px 20px 0px",
                 }}
               >
-                <div>Loading your request...</div>
+                <div>
+                  Loading your request...
+                  <p style={{ color: "red" }}>Please don't close the Chatbot</p>
+                </div>
               </Box>
             </Box>
           </Box>
