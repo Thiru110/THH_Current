@@ -12,6 +12,7 @@ import { Box, CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import Validation from "./Pages/Dashboard/Validation";
 import LinkExtraction from "./Pages/Dashboard/LinkExtraction";
 import { Loader } from "./CommonComp/LoaderComponent/loader";
+import ParticleBg from "./CommonComp/particle";
 
 const theme = createTheme({
   palette: {
@@ -37,7 +38,7 @@ function App() {
           pauseOnFocusLoss
           draggable
           pauseOnHover
-          theme="colored"
+          theme="light"
         />
 
         <Router>

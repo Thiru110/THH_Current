@@ -88,7 +88,7 @@ def generate_token(user):
         'username': user.username,
         'email': user.email,
         'role': user.Role,
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=12)
     }
     token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
     return token  # Directly return the token as string
@@ -290,7 +290,7 @@ def auth():
 #             elif current_node == "NLP":
 #                 next_message = chat_with_sql(response_text)
 #             else:
-#                 next_message = "Invalid response to continue \n A: Fetch Resume \n B: Document Validation \n C: Link Extraction \n D: NLP"
+#                 next_message = "Invalid response to continue \n A: Talent Resourcing \n B: Deep-Doc-Verify \n C: Link Extraction \n D: Chat with Database"
 #         else:
 #             next_message = "Invalid conversation node."
 
@@ -329,7 +329,7 @@ def get_response():
             elif current_node == "NLP":
                 next_message = chat_with_sql(response_text)
             else:
-                next_message = "Invalid response to continue \n A: Fetch Resume \n B: Document Validation \n C: Link Extraction \n D: NLP"
+                next_message = "Invalid response to continue \n A: Talent Resourcing \n B: Deep-Doc-Verify \n C: Link Extraction \n D: Chat with Database"
         else:
             next_message = "Invalid conversation node."
 
@@ -437,8 +437,10 @@ async def final_con():
     try:
         final_api_rank = await main(results, job_id)
         api_rank = pd.DataFrame(final_api_rank)
- 
-        return redirect(url_for('rank',text=text))
+        if api_rank is not None:
+            return redirect(url_for('rank',text=text))
+        else:
+            return jsonify({"status":"Failure", "message":"No resumes found, please edit your Job Description"}), 400
  
     except Exception as e:
         return jsonify({"status": "Error", "message": str(e)}), 500
@@ -567,9 +569,9 @@ def search():
                 return jsonify({"message": "No results fetched, please modify your prompt",}), 406
 
     if le_jdid is not None:
-        return jsonify({"message": f"Search completed. Please check {le_jdid} in the dashboard to view the results. \nWhat else would you like to do: \nA: Fetching resumes\nB: Document validation\nC: Link extraction\nD:NLP", "results": df.to_dict(orient='records')}), 200
+        return jsonify({"message": f"Search completed. Please check {le_jdid} in the dashboard to view the results. \nWhat else would you like to do: \nA: Talent Resourcing\nB: Deep-Doc-Verify\nC: Link Extraction\nD:Chat with Database", "results": df.to_dict(orient='records')}), 200
     else:
-        return jsonify({"message": "Search completed, but no results have been found. Please optimize your query. \nWhat else would you like to do: \nA: Fetching resumes\nB: Document validation\nC: Link extraction\nD:NLP", "results": df.to_dict(orient='records')}), 200
+        return jsonify({"message": "Search completed, but no results have been found. Please optimize your query. \nWhat else would you like to do: \nA: Talent Resourcing\nB: Deep-Doc-Verify\nC: Link Extraction\nD:Chat with Database", "results": df.to_dict(orient='records')}), 200
 
 @app.route('/download_links', methods=['GET'])
 def download_links():

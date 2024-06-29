@@ -48,9 +48,8 @@ const HomePage = () => {
     () => [
       "Welcome to Talent Harbour Hub!",
       "Hello Recruiters !!!",
-      // "A Product of Pozent.",
-      "Streamlining Recruitment for Seamless Hiring.",
-      "Chatbot is ready to assist you.",
+      "Streamline your hiring process effortlessly",
+      "with our ready-to-assist chatbot.",
     ],
     []
   );
@@ -100,7 +99,7 @@ const HomePage = () => {
           height: "100%",
         }}
       >
-        <Box
+        {/* <Box
           sx={{
             width: "65%",
             display: "flex",
@@ -108,6 +107,17 @@ const HomePage = () => {
             alignItems: "center",
             paddingLeft: "100px",
             paddingBottom: "130px",
+          }}
+        > */}
+        <Box
+          sx={{
+            width: ["100%", "65%"], // 100% width for small screens, 65% for larger screens
+            display: "flex",
+            justifyContent: "start",
+            alignItems: "center",
+            paddingLeft: ["20px", "100px"], // Smaller padding for small screens
+            paddingBottom: ["20px", "130px"], // Smaller padding for small screens
+            flexDirection: ["column", "row"], // Stack items vertically on small screens
           }}
         >
           <GreetingMessage className="greeting-message">

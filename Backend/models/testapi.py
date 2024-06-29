@@ -2,6 +2,8 @@ import requests
 import pandas as pd
 from sentence_transformers import SentenceTransformer, util
 from models.sql import sql_data_push    
+from flask import jsonify
+
 def access_tokens():
     with open(r"D:\THH\THH_File\Backend\refresh_tokens.txt","r") as token:
         token=token.read()
@@ -35,8 +37,11 @@ def fetch_resume_profile_api(kwords):
     response1=requests.post(fetch_cand_prof_url,headers=headers, json=skillset_to_post)
 
     if response1.status_code == 200:        
-        data = response1.json()        
-        return data
+        data = response1.json()       
+        if data is None:
+            return jsonify({"status":"Failure", "message":"No resumes found, please edit your Job Description"}), 400
+        else:
+            return data
     else:
         print(f"Error: First API request failed with status code {response1.status_code}")
 
