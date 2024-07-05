@@ -1,9 +1,7 @@
 import { Box } from "@mui/material";
 import React, { useEffect, useState, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { CheckToken } from "../axios/api";
-import { authenticate, logout } from "../Redux/AuthSlice/authSlice";
-import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+// import { useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 
 const slideUp = keyframes`
@@ -38,8 +36,8 @@ const AnimatedSpan = styled.span`
 `;
 // animation-delay: ${props => props.delay}s;
 const HomePage = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  // const dispatch = useDispatch();
+  // const navigate = useNavigate();
 
   const auth = useSelector((state) => state.auth.isAuthenticated);
   const [visibleWords, setVisibleWords] = useState([]);
@@ -54,27 +52,27 @@ const HomePage = () => {
     []
   );
 
-  useEffect(() => {
-    const token = localStorage.getItem("Token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+  // useEffect(() => {
+  //   const token = localStorage.getItem("Token");
+  //   if (!token) {
+  //     navigate("/login");
+  //     return;
+  //   }
 
-    CheckToken()
-      .then((res) => {
-        if (res.status === "Success") {
-          dispatch(authenticate({ user: res.data }));
-        } else {
-          dispatch(logout());
-          navigate("/login");
-        }
-      })
-      .catch((err) => {
-        dispatch(logout());
-        navigate("/login");
-      });
-  }, [dispatch, navigate]);
+  //   CheckToken()
+  //     .then((res) => {
+  //       if (res.status === "Success") {
+  //         dispatch(authenticate({ user: res.data }));
+  //       } else {
+  //         dispatch(logout());
+  //         navigate("/login");
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       dispatch(logout());
+  //       navigate("/login");
+  //     });
+  // }, [dispatch, navigate]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {

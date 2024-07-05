@@ -35,6 +35,7 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import { useTheme } from "@emotion/react";
 import PropTypes from "prop-types";
+import { Loader } from "../../CommonComp/LoaderComponent/loader";
 
 // const StyledTableCell = styled(TableCell)({
 //   border: "2px solid black",
@@ -154,6 +155,7 @@ const FetchResume = () => {
   const [percentageMap, setPercentageMap] = useState({}); // State to store percentage for each row
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(6);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (jsonData) {
@@ -182,6 +184,7 @@ const FetchResume = () => {
 
   // ! for search button api req and add data to the table
   const handleSearchClick = async () => {
+    setLoading(true);
     const url = "/fetch_candidates"; // Ensure the correct protocol is used
     const params = {
       filters: {
@@ -215,11 +218,14 @@ const FetchResume = () => {
     } catch (error) {
       console.error("Error during API call:", error);
       toast.error(error.response.data.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   // ! in table download button api req
   const handleDownloadClick = async (email) => {
+    setLoading(true);
     const url = `/download_api_resumes?email=${encodeURIComponent(
       email
     )}&jd_id=${encodeURIComponent(selectedJobId)}`;
@@ -242,9 +248,12 @@ const FetchResume = () => {
       window.URL.revokeObjectURL(downloadUrl); // Clean up the URL object
     } catch (error) {
       console.error("Error during download request:", error);
+    } finally {
+      setLoading(false);
     }
   };
   const handleMailClick = (email, name) => {
+    setLoading(true);
     const url = `/send-invitation?email=${encodeURIComponent(
       email
     )}&name=${encodeURIComponent(name)}`;
@@ -264,9 +273,13 @@ const FetchResume = () => {
         } else {
           toast.error("An unknown error occurred.");
         }
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
-  const handleRelevantExperienceClick = async (name, jobId, email) => {
+  const handleRelevantClick = async (name, jobId, email) => {
+    setLoading(true);
     const url = `/Relevant?name=${encodeURIComponent(
       name
     )}&job_id=${encodeURIComponent(jobId)}`;
@@ -287,6 +300,8 @@ const FetchResume = () => {
     } catch (error) {
       console.error("Error during Relevant Experience API call:", error);
       toast.error(error.response.data.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -488,7 +503,7 @@ const FetchResume = () => {
                     >
                       <ImageButton
                         onClick={() =>
-                          handleRelevantExperienceClick(
+                          handleRelevantClick(
                             row.Name,
                             selectedJobId,
                             row.Email
@@ -584,7 +599,7 @@ const FetchResume = () => {
           >
             <ImageButton
               onClick={() =>
-                handleRelevantExperienceClick(row.Name, selectedJobId, row.Email)
+                handleRelevantClick(row.Name, selectedJobId, row.Email)
               }
             >
               <img
@@ -638,6 +653,17 @@ const FetchResume = () => {
           </TableFooter>
         </Table>
       </TableContainer>
+      {loading && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "20px",
+          }}
+        >
+          <Loader />
+        </div>
+      )}
     </>
   );
 };

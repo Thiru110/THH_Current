@@ -569,9 +569,9 @@ def search():
                 return jsonify({"message": "No results fetched, please modify your prompt",}), 406
 
     if le_jdid is not None:
-        return jsonify({"message": f"Search completed. Please check {le_jdid} in the dashboard to view the results. \nWhat else would you like to do: \nA: Talent Resourcing\nB: Deep-Doc-Verify\nC: Link Extraction\nD:Chat with Database", "results": df.to_dict(orient='records')}), 200
+        return jsonify({"message": f"Search completed. Please check {le_jdid} in the dashboard to view the results. \nWhat else would you like to do: \nA: Talent Resourcing\nB: Deep-Doc-Verify\nC: Link Extraction\nD: Chat with Database", "results": df.to_dict(orient='records')}), 200
     else:
-        return jsonify({"message": "Search completed, but no results have been found. Please optimize your query. \nWhat else would you like to do: \nA: Talent Resourcing\nB: Deep-Doc-Verify\nC: Link Extraction\nD:Chat with Database", "results": df.to_dict(orient='records')}), 200
+        return jsonify({"message": "Search completed, but no results have been found. Please optimize your query. \nWhat else would you like to do: \nA: Talent Resourcing\nB: Deep-Doc-Verify\nC: Link Extraction\nD: Chat with Database", "results": df.to_dict(orient='records')}), 200
 
 @app.route('/download_links', methods=['GET'])
 def download_links():
