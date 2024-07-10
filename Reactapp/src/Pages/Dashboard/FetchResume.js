@@ -207,9 +207,9 @@ const FetchResume = () => {
 
       const result = response?.data;
 
+      console.log(result?.data);
       if (result.status === "Success") {
         setSearchResults(result?.data);
-        console.log(result?.data);
         toast.success("Data fetched based on your filters");
       } else {
         console.error("Search API call failed:", result.status);
@@ -433,8 +433,6 @@ const FetchResume = () => {
           </TableHead>
 
           <TableBody>
-            {/* {Array.isArray(searchResults) && searchResults.length > 0 ? (
-              searchResults.map((row, index) => ( */}
             {Array.isArray(searchResults) && searchResults.length > 0 ? (
               (rowsPerPage > 0
                 ? searchResults.slice(
@@ -476,7 +474,6 @@ const FetchResume = () => {
                     <Tooltip title="Mail">
                       <ImageButton
                         onClick={() => {
-                          // setSelectedRowEmail(row.Email); // Set the selected row's email
                           handleMailClick(row.Email, row.Name);
                         }}
                       >
@@ -539,98 +536,6 @@ const FetchResume = () => {
               </TableRow>
             )}
           </TableBody>
-          {/* <TableBody>
-  {Array.isArray(searchResults) && searchResults.length > 0 ? (
-    (rowsPerPage > 0
-      ? searchResults.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-      : searchResults
-    ).map((row, index) => (
-      <TableRow key={index}>
-        <StyledTableCell component="th" scope="row">
-          {row.Name}
-        </StyledTableCell>
-        <StyledTableCell align="left">{row.Email}</StyledTableCell>
-        <StyledTableCell align="left">{row.Similarity}</StyledTableCell>
-        <StyledTableCell align="center">
-          <Tooltip title="Download">
-            <ImageButton
-              onClick={async () => {
-                await handleDownloadClick(row.Email);
-              }}
-            >
-              <img
-                src={downloadIcon}
-                alt="Download Icon"
-                style={{
-                  width: "auto",
-                  height: "auto",
-                  maxWidth: "25px",
-                  maxHeight: "25px",
-                }}
-              />
-            </ImageButton>
-          </Tooltip>
-        </StyledTableCell>
-        <StyledTableCell align="center">
-          <Tooltip title="Mail">
-            <ImageButton
-              onClick={() => handleMailClick(row.Email, row.Name)}
-            >
-              <img
-                src={mailIcon}
-                alt="Mail Icon"
-                style={{
-                  width: "auto",
-                  height: "auto",
-                  maxWidth: "25px",
-                  maxHeight: "25px",
-                }}
-              />
-            </ImageButton>
-          </Tooltip>
-        </StyledTableCell>
-        <StyledTableCell align="center">
-          <Tooltip
-            title={
-              selectedJobId !== ""
-                ? ""
-                : "Please fill a Job ID to enable Relevant Ranking"
-            }
-          >
-            <ImageButton
-              onClick={() =>
-                handleRelevantClick(row.Name, selectedJobId, row.Email)
-              }
-            >
-              <img
-                src={releventBtn}
-                alt="Relevant Experience Icon"
-                style={{
-                  width: "auto",
-                  height: "auto",
-                  maxWidth: "30px",
-                  maxHeight: "25px",
-                }}
-              />
-            </ImageButton>
-          </Tooltip>
-          {percentageMap[row.Email] !== undefined && (
-            <div style={{ marginTop: "5px" }}>
-              {`Relevant Experience: ${percentageMap[row.Email]}`}
-            </div>
-          )}
-        </StyledTableCell>
-      </TableRow>
-    ))
-  ) : (
-    <TableRow>
-      <StyledTableCell colSpan={6} align="center">
-        No data available
-      </StyledTableCell>
-    </TableRow>
-  )}
-</TableBody> */}
-
           <TableFooter>
             <TableRow>
               <TablePagination

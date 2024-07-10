@@ -43,7 +43,7 @@ def relative_ranking(resume, skillset):
         # with open(r"promt.txt", 'r', encoding='utf-8') as prompt_file:
         #     prompt_content = prompt_file.read()
         
-        with open(r"prompt_template.txt", 'r', encoding='utf-8') as prompt_file:
+        with open(r"promt3.txt", 'r', encoding='utf-8') as prompt_file:
             prompt_content = prompt_file.read()
         promt_template=r"D:\THH\UpdatedFile\Backend\models\Resume_Harshi T.txt"  
         template2=r"D:\THH\THH_File\Backend\Resume_Varshini Reddy.txt"

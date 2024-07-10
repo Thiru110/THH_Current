@@ -54,7 +54,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'tucEDtE44BbQLv7tXCivZkn1DbmKGsYb'
 
  
-nlp = spacy.load(r"D:\THH\THH_File\Backend\model-best")
+nlp = spacy.load("model-best")
  
 result_df=None
 api_rank=None
@@ -344,7 +344,7 @@ def get_response():
 logging.basicConfig(level=logging.DEBUG)
 
 try:
-    with open(r'D:\THH\THH_File\Backend\conversation_tree.json', 'r') as file:
+    with open('conversation_tree.json', 'r') as file:
         conversation_tree = json.load(file)
 except Exception as e:
     logging.error(f"Error loading conversation_tree.json: {e}")
@@ -437,10 +437,10 @@ async def final_con():
     try:
         final_api_rank = await main(results, job_id)
         api_rank = pd.DataFrame(final_api_rank)
-        if api_rank is not None:
-            return redirect(url_for('rank',text=text))
-        else:
-            return jsonify({"status":"Failure", "message":"No resumes found, please edit your Job Description"}), 400
+        # if api_rank is not None:
+        return redirect(url_for('rank',text=text))
+        # else:
+        #     return jsonify({"status":"Failure", "message":"No resumes found, please edit your Job Description"}), 400
  
     except Exception as e:
         return jsonify({"status": "Error", "message": str(e)}), 500

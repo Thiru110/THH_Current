@@ -228,7 +228,7 @@ const Chatbox = () => {
             ...prevMessages,
             {
               text: "Talent Resourcing failed sorry for the inconvenience. Please try again.",
-              fromBot: false,
+              fromBot: true,
             },
           ]);
           clearFileSelection();
