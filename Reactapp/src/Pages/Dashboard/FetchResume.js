@@ -57,8 +57,8 @@ const ImageButton = styled(ButtonBase)(() => ({
   "& img": {
     width: "auto",
     height: "auto",
-    maxWidth: "30px",
-    maxHeight: "30px",
+    maxWidth: "20px",
+    maxHeight: "20px",
     transition: "transform 0.2s ease",
   },
   "&:hover img": {
@@ -143,6 +143,8 @@ const FetchResume = () => {
   const [data, setData] = useState([]);
   const [jobIds, setJobIds] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
+  // const skillset = searchResults[0].Skillset;
+  // console.log(skillset);
   // const [selectedRowEmail, setSelectedRowEmail] = useState("");
   // console.log(selectedRowEmail);
   const [selectedEmail, setSelectedEmail] = useState(
@@ -217,7 +219,7 @@ const FetchResume = () => {
       }
     } catch (error) {
       console.error("Error during API call:", error);
-      toast.error(error.response.data.message);
+      toast.error(error.response.data?.message);
     } finally {
       setLoading(false);
     }
@@ -314,6 +316,23 @@ const FetchResume = () => {
     setPage(0);
   };
 
+  const formatSkillset = (skillset) => {
+    return skillset
+      .split("\n")
+      .map((line) => {
+        if (line) {
+          const parts = line.split(":");
+          if (parts.length > 1) {
+            const key = parts[0] + ":";
+            const value = parts.slice(1).join(":");
+            return `<span style="font-weight: bold; color: black;">${key}</span><span style="color:#1383D3;">${value}</span>`;
+          }
+          return line;
+        }
+        return line;
+      })
+      .join("<br>");
+  };
   return (
     <>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -323,8 +342,7 @@ const FetchResume = () => {
             justifyContent: "space-evenly",
             alignItems: "center",
             flexWrap: "wrap",
-            padding: "15px 70px",
-            gap: 2,
+            padding: "15px 70px 0px 70px",
           }}
         >
           <TextField
@@ -413,18 +431,35 @@ const FetchResume = () => {
         </Box>
       </LocalizationProvider>
 
+      <div style={{ padding: "2px 150px" }}>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: searchResults[0]
+              ? formatSkillset(searchResults[0].Skillset)
+              : "",
+          }}
+        />
+        {/* {searchResults[0]?.Skillset} */}
+      </div>
+
       <TableContainer
         // component={Paper}
         sx={{ overflowX: "auto", padding: "15px 150px" }}
       >
-        <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+        <Table
+          sx={{
+            "& .MuiTableCell-sizeMedium": {
+              padding: "13px 16px",
+            },
+          }}
+          aria-label="custom pagination table"
+        >
           <TableHead>
             <TableRow>
               <StyledTableCell align="center">Name</StyledTableCell>
               <StyledTableCell align="center">Email</StyledTableCell>
-              <StyledTableCell align="center">
-                Percentage&nbsp;(%)
-              </StyledTableCell>
+              <StyledTableCell align="center">Contact</StyledTableCell>
+              <StyledTableCell align="center">Ranking&nbsp;(%)</StyledTableCell>
               <StyledTableCell align="center" colSpan={2}>
                 Actions
               </StyledTableCell>
@@ -446,6 +481,7 @@ const FetchResume = () => {
                     {row.Name}
                   </StyledTableCell>
                   <StyledTableCell align="left">{row.Email}</StyledTableCell>
+                  <StyledTableCell align="left">{row?.Mobile}</StyledTableCell>
                   <StyledTableCell align="left">
                     {row.Similarity}
                   </StyledTableCell>
@@ -463,8 +499,8 @@ const FetchResume = () => {
                           style={{
                             width: "auto",
                             height: "auto",
-                            maxWidth: "25px",
-                            maxHeight: "25px",
+                            maxWidth: "20px",
+                            maxHeight: "20px",
                           }}
                         />
                       </ImageButton>
@@ -483,8 +519,8 @@ const FetchResume = () => {
                           style={{
                             width: "auto",
                             height: "auto",
-                            maxWidth: "25px",
-                            maxHeight: "25px",
+                            maxWidth: "20px",
+                            maxHeight: "20px",
                           }}
                         />
                       </ImageButton>
@@ -513,8 +549,8 @@ const FetchResume = () => {
                           style={{
                             width: "auto",
                             height: "auto",
-                            maxWidth: "30px",
-                            maxHeight: "25px",
+                            maxWidth: "20px",
+                            maxHeight: "20px",
                           }}
                         />
                       </ImageButton>
@@ -530,7 +566,7 @@ const FetchResume = () => {
               ))
             ) : (
               <TableRow>
-                <StyledTableCell colSpan={6} align="center">
+                <StyledTableCell colSpan={7} align="center">
                   No data available
                 </StyledTableCell>
               </TableRow>
@@ -540,7 +576,7 @@ const FetchResume = () => {
             <TableRow>
               <TablePagination
                 rowsPerPageOptions={[6, 15, 25]}
-                colSpan={6}
+                colSpan={7}
                 count={searchResults.length}
                 rowsPerPage={rowsPerPage}
                 page={page}

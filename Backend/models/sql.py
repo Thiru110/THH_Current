@@ -9,7 +9,7 @@ def job_detail(jd, key, email):
     mydb = mysql.connector.connect(
         host="localhost",
         user="root",
-        database="Antony",
+        database="antony",
         password="root123",
         port="3306",
         auth_plugin='mysql_native_password'
@@ -41,7 +41,7 @@ def sql_data_push(df):
     connection = mysql.connector.connect(
         user="root",
         host="localhost",
-        database="Antony",
+        database="antony",
         password="root123",
         port="3306",
         auth_plugin='mysql_native_password'
@@ -54,9 +54,10 @@ def sql_data_push(df):
     CREATE TABLE IF NOT EXISTS {table_name} (
         ID INT AUTO_INCREMENT PRIMARY KEY,
         JOB_ID VARCHAR(255),
-        LINK TEXT,
+        RESUME TEXT,
         Signature Varchar(255),
         Name VARCHAR(255),
+        Mobile VARCHAR(10),
         Email VARCHAR(255),
         Similarity FLOAT,
         Relevant_experience varchar(255)
@@ -73,10 +74,10 @@ def sql_data_push(df):
    
     for index, row in df.iterrows():
         insert_query = f"""
-            INSERT INTO {table_name} (Job_ID, Resume, Signature, Name, Email, Similarity )
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO {table_name} (Job_ID, Resume, Signature, Name, Mobile, Email, Similarity )
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
-        cursor.execute(insert_query, (row['JOB_ID'], row['Resume'], row['Signature'], row['Name'], row['Email'], row['Similarity']))
+        cursor.execute(insert_query, (row['JOB_ID'], row['Resume'], row['Signature'], row['Name'], row['Mobile'], row['Email'], row['Similarity']))
    
     connection.commit()
     cursor.close()
@@ -322,6 +323,7 @@ def common_dash_func(filters, table):
             print(user_query)
 
         connection.close()
+        #print(df.to_dict(orient='records'))
         return {"status":"Success","data":df.to_dict(orient='records')}, 200
 
     else:

@@ -15,7 +15,7 @@ def access_tokens():
 def fetch_resume_profile_api(kwords):
 
     kwords_list=[]
-    kwords_list1=[mh_skills.upper() for mh_skills in kwords["must_have"]+kwords["good_to_have"]] #[0:3]]
+    kwords_list1=[mh_skills.upper() for mh_skills in kwords["Must have"]+kwords["Good to have"]] #[0:3]]
 
     if kwords_list1 is None:
        return jsonify({"status":"Failure", "message":"No skillsets were extracted, please change your JD"}),500

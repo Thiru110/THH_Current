@@ -1,4 +1,6 @@
-We are looking for a passionate Python developer to join our team at [Company X].
+Python Dev Engineer:
+
+We seek a passionate Python developer to join our team at Pozent.
 
 You will be responsible for developing and implementing high-quality software solutions, creating complex applications using cutting-edge programming features and frameworks and collaborating with other teams in the firm to define, design and ship new features.
 
@@ -28,3 +30,7 @@ Experience with popular Python frameworks such as Django, Flask or Pyramid.
 Knowledge of data science and machine learning concepts and tools.
 A working understanding of cloud platforms such as AWS, Google Cloud or Azure.
 Contributions to open-source Python projects or active involvement in the Python community.
+
+Experience: 3-6 years
+
+Location: India, US

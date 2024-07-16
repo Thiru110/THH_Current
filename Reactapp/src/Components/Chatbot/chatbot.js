@@ -4,12 +4,13 @@ import axios from "axios";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import sendButton from "../../Utils/sendButton.png";
 import { useSelector } from "react-redux";
-import { handleFetchCP } from "../../axios/api";
+import { checkDataFR, checkDataLE, handleFetchCP } from "../../axios/api";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SearchIcon from "../../Utils/SearchIcon.gif";
 import { toast } from "react-toastify";
 import axiosInstance from "../../axios/axiosConfig";
 import { TbMessageChatbot } from "react-icons/tb";
+import { useNavigate } from "react-router-dom";
 const Chatbox = () => {
   const [messages, setMessages] = useState([
     {
@@ -25,7 +26,42 @@ const Chatbox = () => {
   const [selectedFile, setSelectedFile] = useState();
   const [selectedFileName, setSelectedFileName] = useState(""); // New state variable
   // ! for scroll automatically
+  const navigate = useNavigate();
   const messagesEndRef = useRef(null);
+  const HandlefetchResume = () => {
+    checkDataFR(user.email)
+      // .then((response) => response.json())
+      .then((res) => {
+        console.log("Talent Resourcing response:", res);
+        if (res.status === "Success") {
+          toast.success(res.message);
+          navigate("/home/fetchresume", { state: { data: res.data } });
+        } else {
+          toast.error(res?.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Error during Talent Resourcing request:", error);
+        toast.error(error.response.data.message);
+      });
+  };
+  const HandleLinkExtraction = () => {
+    checkDataLE(user.email)
+      // .then((response) => response.json())
+      .then((res) => {
+        console.log("Link Extraction response:", res);
+        if (res.status === "Success") {
+          toast.success(res.message);
+          navigate("/home/linkextraction", { state: { data: res.data } });
+        } else {
+          toast.error(res.data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Error during Link Extraction request:", error);
+        toast.error(error.response.data.message);
+      });
+  };
   // Load messages from local storage when again comes
   // ! for scroll automatically
   useEffect(() => {
@@ -106,6 +142,14 @@ const Chatbox = () => {
     }
   };
   const handleSearch = async (input, userEmail) => {
+    setInput("");
+    setMessages([
+      ...messages,
+      {
+        text: input,
+        fromBot: false,
+      },
+    ]);
     setBotLoading(true);
     await axiosInstance
       .post(
@@ -118,15 +162,14 @@ const Chatbox = () => {
         }
       )
       .then((response) => {
-        setInput("");
-
         console.log(response.data);
+        HandleLinkExtraction();
         setMessages((prevMessages) => [
           ...prevMessages,
-          {
-            text: input,
-            fromBot: false,
-          },
+          // {
+          //   text: input,
+          //   fromBot: false,
+          // },
           {
             text: response.data.message,
             fromBot: true,
@@ -157,6 +200,14 @@ const Chatbox = () => {
     if (selectedFile) {
       const formData = new FormData();
       formData.append("file", selectedFile);
+
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          text: selectedFileName,
+          fromBot: false,
+        },
+      ]);
       setBotLoading(true);
       await axiosInstance
         .post("/docvalidation", formData, {
@@ -165,10 +216,12 @@ const Chatbox = () => {
           },
         })
         .then((response) => {
+          const { Classification, Probability } = response.data.data;
+
           setMessages((prevMessages) => [
             ...prevMessages,
             {
-              text: response?.data,
+              text: `${Probability}% ${Classification}`,
               fromBot: true,
             },
           ]);
@@ -182,9 +235,8 @@ const Chatbox = () => {
               fromBot: true,
             },
           ]);
-          clearFileSelection();
         })
-        .finally(() => setBotLoading(false));
+        .finally(() => (clearFileSelection(), setBotLoading(false)));
     }
   };
 
@@ -213,6 +265,7 @@ const Chatbox = () => {
             "Your resumes have been fetched click dashboard to view your resumes"
           );
 
+          HandlefetchResume();
           setMessages((prevMessages) => [
             ...prevMessages,
             {
@@ -220,7 +273,6 @@ const Chatbox = () => {
               fromBot: true,
             },
           ]);
-          clearFileSelection();
         })
         .catch((error) => {
           console.error("Error uploading file:", error);
@@ -231,9 +283,8 @@ const Chatbox = () => {
               fromBot: true,
             },
           ]);
-          clearFileSelection();
         })
-        .finally(() => setBotLoading(false));
+        .finally(() => (clearFileSelection(), setBotLoading(false)));
     }
   };
   const handleFetchCopypaste = (data, userEmail) => {
@@ -250,6 +301,7 @@ const Chatbox = () => {
 
       handleFetchCP(data, userEmail)
         .then((response) => {
+          HandlefetchResume();
           console.log(`copypaste response: ${response}`); // response is the actual data returned
           setMessages((prevMessages) => [
             ...prevMessages,
@@ -351,7 +403,7 @@ const Chatbox = () => {
                     : "20px 20px 0px 20px ",
                 }}
               >
-                {message.text.split("\n").map((line, i) => (
+                {message.text?.split("\n").map((line, i) => (
                   <div key={i}>{line}</div>
                 ))}
               </Box>
@@ -509,8 +561,8 @@ const Chatbox = () => {
             )}
           </>
         ) : messages.length > 0 &&
-          messages[messages.length - 1].text.toLowerCase() ===
-            "upload your file to validate and wait till we process".toLowerCase() ? (
+          messages[messages.length - 1]?.text.toLowerCase() ===
+            "Upload your file to validate and wait till we process".toLowerCase() ? (
           <>
             <input
               type="file"

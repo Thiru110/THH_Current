@@ -20,7 +20,7 @@
     }
   ],
   "document_validation": [
-    "Work in progress!!",
+    "Upload your file to validate and wait till we process",
     {
       "a": "resume_fetch",
       "c": "Link_extraction",

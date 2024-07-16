@@ -34,6 +34,7 @@ def create_tables_if_not_exist(cursor):
         Signature VARCHAR(255) DEFAULT NULL,
         Name TEXT,
         Email VARCHAR(255) DEFAULT NULL,
+        Mobile VARCHAR(10) DEFAULT NULL,
         Similarity FLOAT DEFAULT NULL,
         Relevant_experience LONGTEXT,
         PRIMARY KEY (ID)

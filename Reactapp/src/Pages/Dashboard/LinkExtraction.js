@@ -268,8 +268,7 @@ const LinkExtraction = () => {
             justifyContent: "space-evenly",
             alignItems: "center",
             flexWrap: "wrap",
-            padding: "15px 70px",
-            gap: 2,
+            padding: "15px 70px 0px 70px",
           }}
         >
           <TextField
@@ -357,14 +356,32 @@ const LinkExtraction = () => {
           </Button>
         </Box>
       </LocalizationProvider>
-
-      <FaDownload
-        size={30}
-        style={{ float: "right", marginRight: "130px", cursor: "pointer" }}
-        onClick={handleDownload}
-      />
-
-      <div>{/* here need to add message*/}</div>
+      <div
+        className="Search Result"
+        style={{
+          display: "flex",
+          justifyContent: "space-around",
+          alignItems: "center",
+        }}
+      >
+        <div
+          style={{
+            color: "#1383D3",
+            // border: "2px solid black",
+            // padding: "5px",
+          }}
+        >
+          <span style={{ color: "black", fontWeight: "bold" }}>
+            Search Results Based on:
+          </span>{" "}
+          {searchResults[0]?.jd}
+        </div>
+        <FaDownload
+          size={25}
+          style={{ cursor: "pointer" }}
+          onClick={handleDownload}
+        />
+      </div>
 
       {/* TableContainer and Table component */}
       <TableContainer

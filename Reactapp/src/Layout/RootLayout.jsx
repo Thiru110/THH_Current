@@ -77,6 +77,7 @@ const RootLayout = () => {
             display: "flex",
             alignItems: "center",
             paddingLeft: "40px",
+            fontSize: "12px",
           }}
         >
           ©2024 Pozent. All Rights Reserved.
