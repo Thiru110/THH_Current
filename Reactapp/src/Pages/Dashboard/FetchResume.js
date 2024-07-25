@@ -291,8 +291,11 @@ const FetchResume = () => {
       const result = response.data;
 
       if (result.status === "Success") {
+        const formattedExperience = formatExperience(
+          result.relevent_experience
+        );
         const updatedMap = { ...percentageMap };
-        updatedMap[email] = result.relevent_experience;
+        updatedMap[email] = formattedExperience;
         setPercentageMap(updatedMap);
         toast.success(`Successfully Calculated Relevant Experience`);
       } else {
@@ -306,6 +309,42 @@ const FetchResume = () => {
       setLoading(false);
     }
   };
+
+  // Helper function to format the experience string into an array of strings
+  const formatExperience = (experienceString) => {
+    // Split the experience string into lines based on specific delimiters
+    return experienceString
+      .split(/(?<=\d%)|(?=-)/)
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+  };
+
+  // const handleRelevantClick = async (name, jobId, email) => {
+  //   setLoading(true);
+  //   const url = `/Relevant?name=${encodeURIComponent(
+  //     name
+  //   )}&job_id=${encodeURIComponent(jobId)}`;
+
+  //   try {
+  //     const response = await axiosInstance.post(url);
+  //     const result = response.data;
+
+  //     if (result.status === "Success") {
+  //       const updatedMap = { ...percentageMap };
+  //       updatedMap[email] = result.relevent_experience;
+  //       setPercentageMap(updatedMap);
+  //       toast.success(`Successfully Calculated Relevant Experience`);
+  //     } else {
+  //       console.error("Relevant Experience API call failed:", result.status);
+  //       toast.error(result.message);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error during Relevant Experience API call:", error);
+  //     toast.error(error.response.data.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -526,6 +565,41 @@ const FetchResume = () => {
                       </ImageButton>
                     </Tooltip>
                   </StyledTableCell>
+                  {/* <StyledTableCell align="center">
+                    <Tooltip
+                      title={
+                        selectedJobId !== ""
+                          ? ""
+                          : "Please fill a Job ID to enable Relevant Ranking"
+                      }
+                    >
+                      <ImageButton
+                        onClick={() =>
+                          handleRelevantClick(
+                            row.Name,
+                            selectedJobId,
+                            row.Email
+                          )
+                        }
+                      >
+                        <img
+                          src={releventBtn}
+                          alt="Relevant Experience Icon"
+                          style={{
+                            width: "auto",
+                            height: "auto",
+                            maxWidth: "20px",
+                            maxHeight: "20px",
+                          }}
+                        />
+                      </ImageButton>
+                    </Tooltip>
+                    {percentageMap[row.Email] !== undefined && (
+                      <div style={{ marginTop: "5px" }}>
+                        {`Relevant Experience: ${percentageMap[row.Email]}`}
+                      </div>
+                    )}
+                  </StyledTableCell> */}
                   <StyledTableCell align="center">
                     <Tooltip
                       title={
@@ -555,10 +629,12 @@ const FetchResume = () => {
                         />
                       </ImageButton>
                     </Tooltip>
-                    {/* Display percentage here */}
+                    {/* Display percentage and formatted experience here */}
                     {percentageMap[row.Email] !== undefined && (
-                      <div style={{ marginTop: "5px" }}>
-                        {`Relevant Experience: ${percentageMap[row.Email]}`}
+                      <div style={{ marginTop: "5px", textAlign: "left" }}>
+                        {percentageMap[row.Email].map((line, index) => (
+                          <div key={index}>{line}</div>
+                        ))}
                       </div>
                     )}
                   </StyledTableCell>

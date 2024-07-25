@@ -129,6 +129,7 @@ const LinkExtraction = () => {
     user.role === "user" ? user.email : ""
   );
   const [selectedJobId, setSelectedJobId] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [jobIds, setJobIds] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
 
@@ -193,9 +194,11 @@ const LinkExtraction = () => {
       console.log(response);
 
       const result = response.data;
+      console.log(result.query);
 
       if (result.status === "Success") {
         setSearchResults(result.data);
+        setSearchQuery(result.query);
         console.log(result.data);
         toast.success("Data fetched based on your filters");
       } else {
@@ -209,7 +212,14 @@ const LinkExtraction = () => {
       setLoading(false);
     }
   };
-
+  const formatQueryString = (query) => {
+    const searchString = "Search results based on:";
+    if (query.startsWith(searchString)) {
+      const restOfQuery = query.slice(searchString.length).trim();
+      return `<span style="color: black; font-weight: bold;">${searchString}</span> <span style="color: #1383D3;">${restOfQuery}</span>`;
+    }
+    return query; // Return as-is if the search string is not found
+  };
   const handleDownload = async () => {
     setLoading(true);
     try {
@@ -359,22 +369,21 @@ const LinkExtraction = () => {
       <div
         className="Search Result"
         style={{
+          marginTop: "10px",
           display: "flex",
           justifyContent: "space-around",
           alignItems: "center",
         }}
       >
-        <div
-          style={{
-            color: "#1383D3",
-            // border: "2px solid black",
-            // padding: "5px",
-          }}
-        >
-          <span style={{ color: "black", fontWeight: "bold" }}>
-            Search Results Based on:
-          </span>{" "}
-          {searchResults[0]?.jd}
+        <div>
+          {searchQuery && (
+            <div
+              style={{ padding: "2px 150px", marginTop: "10px" }}
+              dangerouslySetInnerHTML={{
+                __html: formatQueryString(searchQuery),
+              }}
+            />
+          )}
         </div>
         <FaDownload
           size={25}

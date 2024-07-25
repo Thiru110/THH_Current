@@ -137,7 +137,7 @@ def signup():
 
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).strip().decode('utf-8')
     
-    new_user = UserInfo(username=username, email=email, password=hashed_password, Role='admin')
+    new_user = UserInfo(username=username, email=email, password=hashed_password, Role='user')
     db.session.add(new_user)
     db.session.commit()
 
@@ -649,7 +649,7 @@ def allowed_file(filename):
  
 @app.route('/docvalidation', methods=['POST'])
 def test_api_predict():
-    url="https://2b93-34-90-134-103.ngrok-free.app/predict"
+    url="https://fc66-35-188-239-217.ngrok-free.app/predict"
  
     if 'file' not in request.files:
         return jsonify({"status": "failure", "message": "No file part"}), 400

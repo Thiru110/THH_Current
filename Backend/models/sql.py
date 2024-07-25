@@ -314,17 +314,18 @@ def common_dash_func(filters, table):
             return {"status": "Failure", "message": message}, 404
 
         df = pd.DataFrame(data, columns=[desc[0] for desc in cursor.description])
+        user_query=None
 
         if table == "validation":
             df['Document'] = df['Document'].apply(lambda x: base64.b64encode(x).decode('utf-8') if x else None)
 
         elif table == "link_extractor":
-            user_query = df["jd"].unique().tolist()
+            user_query = f'Search results based on: {df["jd"][0]}' #.unique().tolist()
             print(user_query)
 
         connection.close()
         #print(df.to_dict(orient='records'))
-        return {"status":"Success","data":df.to_dict(orient='records')}, 200
+        return {"status":"Success","data":df.to_dict(orient='records'), "query":user_query}, 200
 
     else:
         return {"status": "Failure", "message": "Failed to connect to the database"}, 500

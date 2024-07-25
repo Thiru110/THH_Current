@@ -28,9 +28,9 @@ const Chatbox = () => {
   // ! for scroll automatically
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
+  const textareaRef = useRef(null);
   const HandlefetchResume = () => {
     checkDataFR(user.email)
-      // .then((response) => response.json())
       .then((res) => {
         console.log("Talent Resourcing response:", res);
         if (res.status === "Success") {
@@ -47,7 +47,6 @@ const Chatbox = () => {
   };
   const HandleLinkExtraction = () => {
     checkDataLE(user.email)
-      // .then((response) => response.json())
       .then((res) => {
         console.log("Link Extraction response:", res);
         if (res.status === "Success") {
@@ -138,7 +137,14 @@ const Chatbox = () => {
         .catch((error) => {
           console.error("Error processing response:", error);
         })
-        .finally(() => setBotLoading(false));
+        .finally(() => {
+          setBotLoading(false);
+          if (textareaRef.current) {
+            setTimeout(() => {
+              textareaRef.current.focus(); // Ensure focus is set
+            }, 0);
+          }
+        });
     }
   };
   const handleSearch = async (input, userEmail) => {
@@ -183,7 +189,14 @@ const Chatbox = () => {
         );
         setInput("");
       })
-      .finally(() => setBotLoading(false));
+      .finally(() => {
+        setBotLoading(false);
+        if (textareaRef.current) {
+          setTimeout(() => {
+            textareaRef.current.focus();
+          }, 0);
+        }
+      });
   };
   const handleFile = (event) => {
     const file = event.target.files[0];
@@ -236,7 +249,15 @@ const Chatbox = () => {
             },
           ]);
         })
-        .finally(() => (clearFileSelection(), setBotLoading(false)));
+        .finally(() => {
+          clearFileSelection();
+          setBotLoading(false);
+          if (textareaRef.current) {
+            setTimeout(() => {
+              textareaRef.current.focus();
+            }, 0);
+          }
+        });
     }
   };
 
@@ -284,7 +305,15 @@ const Chatbox = () => {
             },
           ]);
         })
-        .finally(() => (clearFileSelection(), setBotLoading(false)));
+        .finally(() => {
+          clearFileSelection();
+          setBotLoading(false);
+          if (textareaRef.current) {
+            setTimeout(() => {
+              textareaRef.current.focus();
+            }, 0);
+          }
+        });
     }
   };
   const handleFetchCopypaste = (data, userEmail) => {
@@ -325,14 +354,33 @@ const Chatbox = () => {
         })
         .finally(() => {
           setBotLoading(false);
+          if (textareaRef.current) {
+            setTimeout(() => {
+              textareaRef.current.focus();
+            }, 0);
+          }
         });
     }
   };
 
-  const handleKeyDown = (event) => {
+  const handleKeyDown = async (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      handleSend();
+      if (
+        messages[messages.length - 1]?.text.toLowerCase() ===
+          "please paste your job description...".toLowerCase() &&
+        input.length > 10
+      ) {
+        await handleFetchCopypaste(input, userEmail);
+      } else if (
+        messages[messages.length - 1]?.text.toLowerCase() ===
+          "type your query".toLowerCase() &&
+        input.length > 1
+      ) {
+        await handleSearch(input, userEmail);
+      } else {
+        handleSend();
+      }
     }
   };
   const clearFileSelection = () => {
@@ -463,6 +511,7 @@ const Chatbox = () => {
             marginRight: "10px",
           }}
           disabled={isBotLoading}
+          ref={textareaRef}
         ></textarea>
         {messages[messages.length - 1]?.text.toLowerCase() ===
         "please paste your job description...".toLowerCase() ? (
